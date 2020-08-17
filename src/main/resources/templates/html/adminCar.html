@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>新安社区管理系统后台</title>
+
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/ready.css">
+    <link rel="stylesheet" href="../assets/css/my.css">
+    <link rel="stylesheet" href="../assets/css/demo.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="wrapper" id="app">
+    <!--头部信息-->
+    <div class="main-header">
+
+        <nav class="navbar navbar-header navbar-expand-lg">
+            <div class="container-fluid">
+
+                <div id="addname"></div>  <a href="../admin/logout" methods="post">退出登录</a>
+
+            </div>
+        </nav>
+    </div>
+
+    <!--左侧信息栏-->
+    <div class="sidebar">
+        <div class="scrollbar-inner sidebar-wrapper">
+
+            <ul class="nav">
+                <li class="nav-item " v-show="isAdmin">
+                    <a href="adminIndex.html">
+                        <i class="la la-user-secret">
+                        </i>
+                        <p>员工信息</p>
+                    </a>
+                </li>
+                <li class="nav-item"  >
+                    <a href="adminUser.html">
+                        <i class="la la-user"></i>
+                        <p>业主信息</p>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="adminCar.html">
+                        <i class="la la-automobile"></i>
+                        <p>停车位信息</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminNews.html">
+                        <i class="la la-bullhorn"></i>
+                        <p>社区公告</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminVisitor.html">
+                        <i class="la la-list-alt"></i>
+                        <p>外来人员登记</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminHelp.html">
+                        <i class="la la-exclamation-circle"></i>
+                        <p>安防管理</p>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <!--中间主体内容-->
+    <div class="main-panel">
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card-body ">
+
+                </div>
+
+                <div class="row" id="showAll">
+                    <div class="col-lg-7 col-md-3 col-sm-12" id="showAll1">
+                        <h5>空余车位</h5>
+                        <button class="btn btn-default" onclick="updateNum(-1)">进车</button>&nbsp;&nbsp;
+                        <input size="5" v-model="number" readonly="readonly" >&nbsp;&nbsp;
+                        <button class="btn btn-default" onclick="updateNum(1)">出车</button><h5> </h5>
+                        <h5>信息公告</h5>
+                        <span >{{news}}</span>
+                        <h5> </h5>
+
+                        <h5>信息发布</h5> <textarea id="news" cols="90px" rows="5px"  style="resize:none"  required></textarea><br>
+
+                        <button class="btn btn-success" onclick="updateNews()">确定发布信息</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+
+    <!--员工登录验证-->
+    window.onload=function () {
+
+        $.ajax({
+            type:"post",
+            url:"../admin/getAdmin",
+            // data:JSON.stringify(info),
+            // contentType: 'application/json;charset=UTF-8',
+            // dataType:"json",
+            success: function(data){
+                if(data.adminState == 1){
+                    app.isAdmin=false
+                }
+                if (data==""){
+                    alert("当前为获取到员工信息，请登录...")
+                    window.open(url="../html/adminLogin.html","_self")
+                }else {
+                    $("#addname").append("当前用户:"+data.adminName+"")
+                    app.getCar()
+                }
+            }
+        });
+    }
+
+    function updateNews () {
+        var news = $("#news").val()
+        $.ajax({
+            type:"post",
+            url:"../car/updateNews",
+            data:"news="+news,
+            // contentType: 'application/json;charset=UTF-8',
+            // dataType:"json",
+            success:function(data) {
+                alert(data.msg)
+                app.getCar()
+                $("#news").val("")
+            }
+        })
+    }
+    function updateNum(num) {
+        console.log(num)
+        $.ajax({
+            type:"post",
+            url:"../car/updateNumber",
+            data:"num="+num,
+            success:function(data) {
+                alert(data.msg)
+                app.getCar()
+            }
+        })
+    }
+    var app = new Vue({
+        el:"#app",
+        data:{
+            isAdmin:true,
+            number:"",
+            news:""
+        },
+        methods:{
+            /*获取停车场信息*/
+            getCar:function () {
+                var news = $("#news").val()
+                $.ajax({
+                    url:"../car/getCar",
+                    type: "post",
+                    success:function (data) {
+                        app.number=data.carNumber
+                        app.news= data.carNews
+                        console.log(data.news)
+                    }
+                })
+            },
+
+
+        }
+    })
+</script>
+</html>

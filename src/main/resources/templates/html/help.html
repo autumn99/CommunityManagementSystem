@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新安社区管理系统</title>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/ready.css">
+    <link rel="stylesheet" href="../assets/css/my.css">
+    <link rel="stylesheet" href="../assets/css/demo.css">
+</head>
+<body>
+<div class="wrapper" id="app">
+    <!--头部信息-->
+    <div class="main-header">
+
+        <nav class="navbar navbar-header navbar-expand-lg">
+            <div class="container-fluid">
+
+                <div id="addname"></div>  <a href="../user/outLog" methods="post">退出登录</a>
+
+            </div>
+        </nav>
+    </div>
+
+    <!--左侧信息栏-->
+    <div class="sidebar">
+        <div class="scrollbar-inner sidebar-wrapper">
+
+            <ul class="nav">
+                <li class="nav-item " >
+                    <a href="index.html">
+                        <i class="la la-user">
+                        </i>
+                        <p >个人信息</p>
+                    </a>
+                </li>
+                <li class="nav-item " >
+                    <a href="house.html">
+                        <i class="la la-institution">
+                        </i>
+                        <p >房产信息</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="car.html">
+                        <i class="la la-automobile"></i>
+                        <p>停车位信息</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="news.html">
+                        <i class="la la-bullhorn"></i>
+                        <p>社区公告</p>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="help.html">
+                        <i class="la la-exclamation-circle"></i>
+                        <p>请求帮助</p>
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+
+    <!--中间主体内容-->
+    <div class="main-panel">
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card-body ">
+
+                    <h4 >新安社区管理系统:</h4><br>
+                    <h5 style="color:limegreen">上班上学家无人 停火关电锁好门</h5><br>
+                    <h5 style="color:limegreen">消防事关你我他，安全系着千万家</h5><br>
+                    <h5 style="color:limegreen">守法 护法 建设平安社区</h5><br>
+                </div>
+
+                <div class="row" id="showAll">
+                    <div class="col-lg-7 col-md-3 col-sm-12" id="showAll1">
+
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-4 col-md-3 col-sm-12 text-right">
+                            </div>
+                            <button class="btn btn-danger" @click="help">一键求助</button>&nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-success" @click="nohelp">取消求助</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    /*登录身份验证*/
+    window.onload=function () {
+        app.start()
+    }
+
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            carNews:"",
+            carNumber:"",
+            userName:""
+
+        },
+        methods:{
+            /*加载页面信息*/
+            start:function () {
+                $.ajax({
+                    type:"post",
+                    url:"../user/getUser",
+                    success: function(data){
+                        if (data==""){
+                            alert("未获取登录信息，请登录...")
+                            window.open(url="../html/login.html","_self")
+                        }else {
+                            $("#addname").append("当前用户:"+data.userName+"")
+                            app.userName= data.userName
+
+                        }
+                    }
+                });
+            },
+            /*求助*/
+            help:function () {
+                $.ajax({
+                    type:"post",
+                    url:"../user/help",
+                    data:"userName="+app.userName,
+                    success: function(data){
+                       alert(data.msg)
+                    }
+                });
+            },
+            /*取消求助*/
+            nohelp:function () {
+                $.ajax({
+                    type:"post",
+                    url:"../user/nohelp",
+                    data:"userName="+app.userName,
+                    success: function(data){
+                       alert(data.msg)
+                    }
+                });
+            }
+        }
+    })
+</script>
+</html>

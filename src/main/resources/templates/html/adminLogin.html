@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8" />
+<title>新安社区管理系统后台</title>
+<link rel="stylesheet" type="text/css" href="../css/index.css" />
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+</head>
+<script type="text/javascript">
+
+	/*管理员登录*/
+	function login() {
+	    var name = $("#name").val();
+	    var password = $("#password").val();
+	    var info = {"adminName":name,"adminPassword":password}
+
+	    $.ajax({
+
+            type:"post",
+            url:"../admin/login",
+            data:JSON.stringify(info),
+            contentType: 'application/json;charset=UTF-8',
+            dataType:"json",
+            success: function(data){
+                if(data.msg == "登录成功"){
+
+                    location.href="adminIndex.html"
+
+                }else{
+                    alert(data.msg)
+
+                }
+            }
+
+		})
+	}
+
+</script>
+<body>
+
+<img class="bgone" src="../img/roleLogin_1.jpg" />
+<img class="pic" src="../img/timg.jpg" />
+
+<div class="table">
+	<div class="wel">新安社区管理系统</div>
+	<div class="wel1">XIN AN SHE QU GUAN LI XI TONG</div>
+	<div class="user">
+		<div id="yonghu" style=""><img src="../img/roleLogin_yhm.png" /></div>
+		<input type="text" name="" placeholder="账号" id="name"/>
+	</div>
+	<div class="password">
+		<div id="yonghu"><img src="../img/roleLogin_mm.png" /></div>
+		<input type="password" name="密码" placeholder="密码" id="password"/>
+	</div>
+	<input class="btn" type="button" name="登录" value="登录" onclick="login()"/>
+</div>
+
+</body>
+</html>

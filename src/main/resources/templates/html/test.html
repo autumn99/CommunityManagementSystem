@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<body>
+<div id="app">
+
+    <button id="statr" @click="test">开始</button>
+    <p>{{message}}</p>
+</div>
+</body>
+<script >
+    // document.querySelector("#statr").onclick= function() {
+    //     axios.get("/test?i=2").then(function (data) {
+    //         console.log(data)
+    //     })
+    // }
+
+/*    document.querySelector("#statr").onclick= function() {
+        axios.post("/test",{i:"5"}).then(function (data) {
+            console.log(data)
+        })
+    }*/
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            message:"joke"
+        },
+        methods:{
+            test:function () {
+                var that = this;
+                var data = {"name":"tom"};
+                axios({
+                    method: 'post',
+                    url: '/test',
+                    // 传递参数
+                    data: data,
+                    responseType: 'json'
+                }).then(response => {
+                    // 请求成功
+                    let res = response.data;
+                    console.log(res);
+                    that.message=res
+                }).catch(error => {
+                    // 请求失败，
+                    console.log(error);
+                });
+            }
+        }
+    })
+
+
+</script>
+</html>

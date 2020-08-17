@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>新安社区管理系统后台</title>
+
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/ready.css">
+    <link rel="stylesheet" href="../assets/css/my.css">
+    <link rel="stylesheet" href="../assets/css/demo.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="wrapper" id="app">
+    <!--头部信息-->
+    <div class="main-header">
+
+        <nav class="navbar navbar-header navbar-expand-lg">
+            <div class="container-fluid">
+
+                <div id="addname"></div>  <a href="../admin/logout" methods="post">退出登录</a>
+
+            </div>
+        </nav>
+    </div>
+
+    <!--左侧信息栏-->
+    <div class="sidebar">
+        <div class="scrollbar-inner sidebar-wrapper">
+
+            <ul class="nav">
+                <li class="nav-item " v-show="isAdmin">
+                    <a href="adminIndex.html">
+                        <i class="la la-user-secret">
+                        </i>
+                        <p>员工信息</p>
+                    </a>
+                </li>
+                <li class="nav-item active"  >
+                    <a href="adminUser.html">
+                        <i class="la la-user"></i>
+                        <p>业主信息</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminCar.html">
+                        <i class="la la-automobile"></i>
+                        <p>停车位信息</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminNews.html">
+                        <i class="la la-bullhorn"></i>
+                        <p>社区公告</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminVisitor.html">
+                        <i class="la la-list-alt"></i>
+                        <p>外来人员登记</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="adminHelp.html">
+                        <i class="la la-exclamation-circle"></i>
+                        <p>安防管理</p>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <!--中间主体内容-->
+    <div class="main-panel">
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card-body ">
+
+                </div>
+
+                <div class="row" id="showAll">
+                    <div class="col-lg-7 col-md-3 col-sm-12" id="showAll1">
+                        <button class="btn btn-default" onclick="showAll()">全部信息</button>&nbsp;&nbsp;
+                        <button class="btn btn-default" onclick="help()">求助信息</button>
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">业主姓名</th>
+                                <th scope="col">业主电话</th>
+                                <th scope="col">业主地址</th>
+                                <th scope="col">房产证号</th>
+                                <th scope="col">求助状况</th>
+                                <th scope="col">选择操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tab">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+
+    <!--员工登录验证-->
+    window.onload=function () {
+
+        $.ajax({
+            type:"post",
+            url:"../admin/getAdmin",
+            // data:JSON.stringify(info),
+            // contentType: 'application/json;charset=UTF-8',
+            // dataType:"json",
+            success: function(data){
+                if(data.adminState == 1){
+                    app.isAdmin=false
+                }
+                if (data==""){
+                    alert("当前为获取到员工信息，请登录...")
+                    window.open(url="../html/adminLogin.html","_self")
+                }else {
+                    $("#addname").append("当前用户:"+data.adminName+"")
+                    showAll()
+                }
+            }
+        });
+    }
+    /*显示全部信息*/
+    function showAll() {
+
+        $("#tab").empty();
+        var str = " "
+        $.ajax({
+            type:"post",
+            url:"../user/selUser",
+            contentType: 'application/json;charset=UTF-8',
+            dataType:"json",
+            success: function(data){
+                for(var i=0;i<data.length;i++){
+                    if(data[i].userState==0){
+                        var userState ="安全"
+                    }else if (data[i].userState == 1) {
+                        var userState ="求助"
+                    }
+                    str="<tr>" +
+                        "<td>"+data[i].userName+"</td>"+
+                        "<td>" +data[i].userPhone+"</td>" +
+                        "<td>" +data[i].userAddress+"</td>" +
+                        "<td> <input type='text' placeholder="+data[i].userNumber+" id="+data[i].userName+"sa"+"  ></td>" +
+                        "<td>" +userState+"</td>" +
+                        "<td ><button onclick='updateNumber(value)' value="+data[i].userName+"  class='btn btn-info'>修改房产证号</button></td>"+
+                        "</tr>";
+
+                    $("#tab").append(str);
+                }
+
+            }
+        });
+    }
+    /*显示求助信息*/
+    function help() {
+
+        $("#tab").empty();
+        var str = " "
+        $.ajax({
+            type:"post",
+            url:"../user/selHelp",
+            contentType: 'application/json;charset=UTF-8',
+            dataType:"json",
+            success: function(data){
+
+                for(var i=0;i<data.length;i++){
+
+                    if(data[i].userState==0){
+                        var userState ="安全"
+
+                    }else if (data[i].userState == 1) {
+                        var userState ="求助"
+                    }
+
+                    str="<tr>" +
+                        "<td>"+data[i].userName+"</td>"+
+                        "<td>" +data[i].userPhone+"</td>" +
+                        "<td>" +data[i].userAddress+"</td>" +
+                        "<td>" +data[i].userNumber+"</td>" +
+                        "<td>" +userState+"</td>" +
+                        "<td >" +
+                        "<button onclick='updateState(value)' value="+data[i].userName+"  class='btn btn-success'>已解决</button>" +
+                        "</td>"+
+                        "</tr>";
+
+                    $("#tab").append(str);
+                }
+
+            }
+        });
+    }
+    /*更新用户状态*/
+    function updateState(value) {
+        console.log(value)
+        var info ={"userName":value,"userState":0}
+        var r=confirm("确定物业已派人处理?")
+        if (r==true)
+        {
+            $.ajax({
+                type :"post",
+                url:"../user/updateState",
+                data:JSON.stringify(info),
+                contentType: 'application/json;charset=UTF-8',
+                dataType:"json",
+                success:function (data) {
+                    if (data.msg=="成功") {
+                        help()
+                    }else {
+                        alert(data.msg)
+                    }
+                }
+            })
+        }
+    }
+    /*房产证号修改*/
+    function updateNumber(value) {
+        var userNumber = $("#"+value+"sa").val()
+        console.log(userNumber)
+        var info ={"userName":value,"userNumber":userNumber}
+        var r=confirm("确定修改房产证号?")
+        if (r==true)
+        {
+            $.ajax({
+                type :"post",
+                url:"../user/updateNumber",
+                data:JSON.stringify(info),
+                contentType: 'application/json;charset=UTF-8',
+                dataType:"json",
+                success:function (data) {
+                    if (data.msg=="成功") {
+                        showAll()
+                    }else {
+                        alert(data.msg)
+                    }
+                }
+            })
+        }
+    }
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            isAdmin:true,
+
+        },
+
+    })
+</script>
+</html>

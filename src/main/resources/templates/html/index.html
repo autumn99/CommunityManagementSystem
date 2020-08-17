@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新安社区管理系统</title>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/ready.css">
+    <link rel="stylesheet" href="../assets/css/my.css">
+    <link rel="stylesheet" href="../assets/css/demo.css">
+</head>
+<body>
+<div class="wrapper" id="app">
+    <!--头部信息-->
+    <div class="main-header">
+
+        <nav class="navbar navbar-header navbar-expand-lg">
+            <div class="container-fluid">
+
+                <div id="addname"></div>  <a href="../user/outLog" methods="post">退出登录</a>
+
+            </div>
+        </nav>
+    </div>
+
+    <!--左侧信息栏-->
+    <div class="sidebar">
+        <div class="scrollbar-inner sidebar-wrapper">
+
+            <ul class="nav">
+                <li class="nav-item active" >
+                    <a href="index.html">
+                        <i class="la la-user">
+                        </i>
+                        <p >个人信息</p>
+                    </a>
+                </li>
+                <li class="nav-item " >
+                    <a href="house.html">
+                        <i class="la la-institution">
+                        </i>
+                        <p >房产信息</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="car.html">
+                        <i class="la la-automobile"></i>
+                        <p>停车位信息</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="news.html">
+                        <i class="la la-bullhorn"></i>
+                        <p>社区公告</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="help.html">
+                        <i class="la la-exclamation-circle"></i>
+                        <p>请求帮助</p>
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+
+    <!--中间主体内容-->
+    <div class="main-panel">
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card-body ">
+                    <!--<button class="page-title" @click="showInfo">业主信息</button>-->
+                    <!--<button class="page-title" @click="updateInfo">修改信息</button>-->
+                    <h3>业主个人信息如下：</h3>
+                </div>
+
+                <div class="row" id="showAll">
+                    <div class="col-lg-7 col-md-3 col-sm-12" id="showAll1">
+
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-4 col-md-3 col-sm-12 text-right">
+                                <label >业主姓名:</label>
+                            </div>
+                            <input type="text" class="form-control input-fixed" v-model="userName" readonly="readonly">
+                        </div>
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-4 col-md-3 col-sm-12 text-right">
+                                <label >业主电话:</label>
+                            </div>
+                            <input type="text" class="form-control input-fixed" v-model="userPhone" >
+                        </div>
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-4 col-md-3 col-sm-12 text-right">
+                                <label >修改密码:</label>
+                            </div>
+                            <input type="password" class="form-control input-fixed" v-model="userPassword" placeholder="输入新密码">
+                        </div>
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-4 col-md-3 col-sm-12 text-right">
+                                <label >业主状态:</label>
+                            </div>
+                            <input type="text" class="form-control input-fixed" v-model="userState" readonly="readonly">
+                        </div>
+
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-5 col-md-9 col-sm-12 text-right">
+                                <button class="btn btn-primary" @click="updateInfo">更改电话</button>
+                            </div>
+                        </div>
+                        <div class="form-group from-show-notify row">
+                            <div class="col-lg-5 col-md-9 col-sm-12 text-right">
+                                <button class="btn btn-warning" @click="updatePassword">修改密码</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    /*登录身份验证*/
+    window.onload=function () {
+       app.start()
+    }
+
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            userName:"",
+            userPhone:"",
+            userPassword:"",
+            userState:"",
+        },
+        methods:{
+            /*加载页面信息*/
+            start:function () {
+                $.ajax({
+                    type:"post",
+                    url:"../user/getUser",
+                    success: function(data){
+                        if (data==""){
+                            alert("未获取登录信息，请登录...")
+                            window.open(url="../html/login.html","_self")
+                        }else {
+                            $("#addname").append("当前用户:"+data.userName+"")
+                            app.userName=data.userName
+
+                            app.selNow()
+                        }
+                    }
+                });
+            },
+            /*更改电话号码*/
+            updateInfo:function () {
+
+                var r=confirm("您确定要修改?")
+                if (r==true)
+                {
+                    var info={"userName":app.userName,"userPhone":app.userPhone}
+                    $.ajax({
+                        url:"../user/updatePhone",
+                        type:"post",
+                        data:JSON.stringify(info),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType:"json",
+                        success:function (data) {
+                            alert(data.msg)
+                            app.selNow()
+                        }
+                    })
+                }
+            },
+            /*修改密码*/
+            updatePassword:function () {
+
+                var r=confirm("您确定要修改?")
+                if (r==true)
+                {
+                    var info={"userName":app.userName,"userPassword":app.userPassword}
+                    console.log(app.userPassword)
+                    $.ajax({
+                        url:"../user/updatePassword",
+                        type:"post",
+                        data:JSON.stringify(info),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType:"json",
+                        success:function (data) {
+                            alert(data.msg)
+
+                        }
+                    })
+                }
+            },
+            selNow : function() {
+                $.ajax({
+                    url:"../user/nowUser",
+                    type:"post",
+                    data:"userName="+app.userName,
+                    success:function (data) {
+                        app.userName=data.userName
+                        app.userPhone=data.userPhone
+                        if(data.userState==0){
+                            app.userState="安全状态"
+                        }else if(data.userState==1){
+                            app.userState="已发出求助，物业正前往处理"
+                        }
+                    }
+                })
+            }
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>新安社区管理系统后台</title>
+
+	<link rel="stylesheet" href="../css/pagination.css" />
+	<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/ready.css">
+	<link rel="stylesheet" href="../assets/css/my.css">
+	<link rel="stylesheet" href="../assets/css/demo.css">
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<!--<script type="text/javascript" src="../js/jquery.pagination.js"></script>-->
+
+</head>
+
+<body>
+<div class="wrapper" id="app">
+
+	<!--头部信息-->
+	<div class="main-header">
+
+			<nav class="navbar navbar-header navbar-expand-lg">
+				<div class="container-fluid">
+
+					<div id="addname"></div>  <a href="../admin/logout" methods="post">退出登录</a>
+
+				</div>
+			</nav>
+		</div>
+
+		<!--左侧信息栏-->
+		<div class="sidebar">
+				<div class="scrollbar-inner sidebar-wrapper">
+
+					<ul class="nav">
+						<li class="nav-item active" v-show="isAdmin">
+							<a href="adminIndex.html">
+                                <i class="la la-user-secret">
+                                </i>
+                                <p>员工信息</p>
+							</a>
+						</li>
+						<li class="nav-item" >
+							<a href="adminUser.html">
+                                <i class="la la-user"></i>
+								<p>业主信息</p>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="adminCar.html">
+                                <i class="la la-automobile"></i>
+								<p>停车位信息</p>
+							</a>
+						</li>
+						<li class="nav-item ">
+							<a href="adminNews.html">
+                                <i class="la la-bullhorn"></i>
+								<p>社区公告</p>
+							</a>
+						</li>
+						<li class="nav-item ">
+							<a href="adminVisitor.html">
+								<i class="la la-list-alt"></i>
+								<p>外来人员登记</p>
+							</a>
+						</li>
+						<li class="nav-item ">
+							<a href="adminHelp.html">
+								<i class="la la-exclamation-circle"></i>
+								<p>安防管理</p>
+							</a>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+
+		<!--中间主体内容-->
+		<div class="main-panel" v-show="isAdmin">
+				<div class="content">
+					<div class="container-fluid">
+						<!--副标题-->
+                        <div class="card-body ">
+						    <button class="btn btn-default" onclick="insert()">添加员工信息</button>
+                            <button class="btn btn-default" onclick="showAll()">查看所有员工</button>
+                        </div>
+						<div class="row" id="insert">
+							<div class="col-md-12">
+								<div class="card">
+
+									<div class="card-body">
+										<div class="form">
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-4 col-md-3 col-sm-12 text-right">
+													<label >账号:</label>
+												</div>
+												<input type="text" class="form-control input-fixed" id="rolename" placeholder="员工账号">
+											</div>
+
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-4 col-md-3 col-sm-12 text-right">
+													<label >密码:</label>
+												</div>
+												<input type="password" class="form-control input-fixed" id="rolepassword" placeholder="员工密码">
+											</div>
+
+                                            <div class="form-group from-show-notify row">
+                                                <div class="col-lg-4 col-md-3 col-sm-12 text-right">
+                                                    <label >电话:</label>
+                                                </div>
+                                                <input type="text" class="form-control input-fixed" id="phone" placeholder="员工电话">
+                                            </div>
+
+											<div class="form-group from-show-notify row" >
+                                                <div class="col-lg-5 col-md-3 col-sm-12 text-right">
+													<label class="form-radio-label">
+														<input type="radio" class="form-radio-input"  name="perms" value="0">
+														<span class="form-radio-sign" id="admin">
+															    管理员
+														</span>&nbsp;
+													</label>
+													<label class="form-check-label">
+														<input type="radio" class="form-radio-input" name="perms" value="1" >
+														<span class="form-radio-sign" id="staff">
+															普通员工
+														</span>
+													</label>
+
+												</div>
+											</div>
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-5 col-md-9 col-sm-12 text-right">
+													<button class="btn btn-success" onclick="roleInfo()">提交信息</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+                        <div class="row" id="pagination">
+                            <table class="table table-bordered table-head-bg-info table-bordered-bd-info mt-4">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">员工账号</th>
+                                        <th scope="col">员工角色</th>
+                                        <th scope="col">员工电话</th>
+                                        <th scope="col">选择操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tab">
+
+                                </tbody>
+                            </table>
+                        </div>
+						<div class="row" id="updateInfo">
+							<div class="col-md-12">
+								<div class="card">
+
+									<div class="card-body">
+										<div class="form">
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-4 col-md-3 col-sm-12 text-right">
+													<label >账号:</label>
+												</div>
+												<input type="text" class="form-control input-fixed" id="updatename" placeholder="员工账号" readonly="readonly">
+											</div>
+
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-4 col-md-3 col-sm-12 text-right">
+													<label >密码:</label>
+												</div>
+												<input type="password" class="form-control input-fixed" id="updatepassword" placeholder="更改密码" >
+											</div>
+
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-4 col-md-3 col-sm-12 text-right">
+													<label >电话:</label>
+												</div>
+												<input type="text" class="form-control input-fixed" id="updatephone" placeholder="更改电话">
+											</div>
+
+											<div class="form-group from-show-notify row" >
+												<div class="col-lg-5 col-md-3 col-sm-12 text-right">
+													<label class="form-radio-label">
+														<input type="radio" class="form-radio-input"  name="updateperms" value="0">
+														<span class="form-radio-sign" >
+															    管理员
+														</span>&nbsp;
+													</label>
+													<label class="form-check-label">
+														<input type="radio" class="form-radio-input" name="updateperms" value="1" >
+														<span class="form-radio-sign" >
+															普通员工
+														</span>
+													</label>
+
+												</div>
+											</div>
+											<div class="form-group from-show-notify row">
+												<div class="col-lg-5 col-md-9 col-sm-12 text-right">
+													<button class="btn btn-success" onclick="updateInfo()">确定更改</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+
+    function showAll() {
+        $("#insert").attr("style","display:none;");
+        $("#pagination").attr("style","display:block;");
+        $("#updateInfo").attr("style","display:none;");//隐藏
+    }
+
+    function insert() {
+        $("#insert").attr("style","display:block;");
+        $("#pagination").attr("style","display:none;");
+        $("#updateInfo").attr("style","display:none;");//隐藏
+    }
+
+    function updateByNmae(value) {
+        $("#insert").attr("style","display:none;");
+        $("#pagination").attr("style","display:none;");
+        $("#updateInfo").attr("style","display:block;");//隐藏
+        $("#updatename").val(value)
+
+
+
+    }
+    /*修改信息*/
+    function updateInfo() {
+        var name = $("#updatename").val();
+        var password = $("#updatepassword").val();
+        var phone = $("#updatephone").val();
+        var state = $('input[name="updateperms"]:checked').val();
+        var info = {"adminName":name,"adminPassword":password,"adminPhone":phone,"adminState":state};
+        console.log(info);
+        $.ajax({
+            type:"post",
+            url:"../admin/updtaeInfo",
+            data:JSON.stringify(info),
+            contentType: 'application/json;charset=UTF-8',
+            dataType:"json",
+            success: function(data){
+                if(data.msg=="修改成功"){
+                    alert(data.msg)
+                    location.reload()
+                }else {
+                    alert(data.msg)
+                }
+
+            }
+        });
+    }
+
+    /*删除信息*/
+    function deleteById(value){
+        var info = {"adminId":value}
+        console.log(info)
+        var r=confirm("您确定要删除?")
+        if (r==true)
+        {
+            $.ajax({
+                type:"post",
+                url:"../admin/deleteInfo",
+                data:JSON.stringify(info),
+                contentType: 'application/json;charset=UTF-8',
+                dataType:"json",
+                success: function(data){
+                    if(data.msg=="删除成功"){
+                        alert(data.msg)
+                        location.reload()
+                    }else {
+                        alert(data.msg)
+                    }
+                }
+            });
+        }else {
+
+            return;
+        }
+
+
+    }
+    <!--员工登录验证-->
+    window.onload=function () {
+
+        $.ajax({
+            type:"post",
+            url:"../admin/getAdmin",
+            success: function(data){
+                $("#insert").attr("style","display:none;");
+                $("#pagination").attr("style","display:block;");
+                $("#updateInfo").attr("style","display:none;");//隐藏
+                if(data.adminState == 1){
+                    app.isAdmin=false
+                }
+                if (data==""){
+                    alert("当前为获取到员工信息，请登录...")
+                    window.open(url="../html/adminLogin.html","_self")
+                }else {
+                    $("#addname").append("当前用户:"+data.adminName+"")
+
+                }
+            }
+        });
+
+        var str = " "
+        $.ajax({
+            type:"post",
+            url:"../admin/selAll",
+            contentType: 'application/json;charset=UTF-8',
+            dataType:"json",
+            success: function(data){
+                for(var i=0;i<data.length;i++){
+					if (data[i].adminState == 0){
+					    var admin ="管理员"
+					}else if (data[i].adminState == 1) {
+                        var admin ="普通员工"
+					}
+                    str="<tr>" +
+                        "<td>"+data[i].adminName+"</td>"+
+                        "<td>" +admin+"</td>" +
+                        "<td>" +data[i].adminPhone+"</td>"+
+                        "<td >" +
+                        "<button onclick='deleteById(value)' value='"+data[i].adminId+"'  class='btn btn-danger'>删除</button>&nbsp;&nbsp;" +
+                        "&nbsp;&nbsp;<button onclick='updateByNmae(value)' value='"+data[i].adminName+"'  class='btn btn-warning'>修改</button></td>"+
+                        "</tr>";
+                    $("#tab").append(str);
+                }
+                $("#insert").attr("style","display:none;");
+                $("#pagination").attr("style","display:block;");
+                $("#updateInfo").attr("style","display:none;");//隐藏
+
+            }
+        });
+    }
+
+    /*添加信息*/
+    function roleInfo() {
+        var name = $("#rolename").val();
+        var password = $("#rolepassword").val();
+        var phone = $("#phone").val();
+        var state = $('input[name="perms"]:checked').val();
+        var info = {"adminName":name,"adminPassword":password,"adminPhone":phone,"adminState":state};
+        console.log(info);
+        $.ajax({
+            type:"post",
+            url:"../admin/insertInfo",
+            data:JSON.stringify(info),
+            contentType: 'application/json;charset=UTF-8',
+            dataType:"json",
+            success: function(data){
+                if(data.msg=="添加成功"){
+                    alert(data.msg)
+                    location.reload()
+                }else {
+                    alert(data.msg)
+                }
+
+
+            }
+        });
+
+    }
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            isAdmin:true,
+
+        },
+
+    })
+</script>
+</html>

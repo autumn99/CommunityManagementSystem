@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新安社区管理系统</title>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/ready.css">
+    <link rel="stylesheet" href="../assets/css/my.css">
+    <link rel="stylesheet" href="../assets/css/demo.css">
+</head>
+<body>
+<div class="wrapper" id="app">
+    <!--头部信息-->
+    <div class="main-header">
+
+        <nav class="navbar navbar-header navbar-expand-lg">
+            <div class="container-fluid">
+
+                <div id="addname"></div>  <a href="../user/outLog" methods="post">退出登录</a>
+
+            </div>
+        </nav>
+    </div>
+
+    <!--左侧信息栏-->
+    <div class="sidebar">
+        <div class="scrollbar-inner sidebar-wrapper">
+
+            <ul class="nav">
+                <li class="nav-item " >
+                    <a href="index.html">
+                        <i class="la la-user">
+                        </i>
+                        <p >个人信息</p>
+                    </a>
+                </li>
+                <li class="nav-item " >
+                    <a href="house.html">
+                        <i class="la la-institution">
+                        </i>
+                        <p >房产信息</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="car.html">
+                        <i class="la la-automobile"></i>
+                        <p>停车位信息</p>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="news.html">
+                        <i class="la la-bullhorn"></i>
+                        <p>社区公告</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="help.html">
+                        <i class="la la-exclamation-circle"></i>
+                        <p>请求帮助</p>
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+
+    <!--中间主体内容-->
+    <div class="main-panel">
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row" id="showAll">
+                    <table class="table table-bordered table-head-bg-info table-bordered-bd-info mt-4">
+                        <thead>
+                        <tr>
+                            <th scope="col">公告标题</th>
+                            <th scope="col">公告内容</th>
+                            <th scope="col">发布人</th>
+                            <th scope="col">发布时间</th>
+
+                        </tr>
+                        </thead>
+                        <tbody id="tab3">
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    /*登录身份验证*/
+    window.onload=function () {
+        app.start()
+    }
+
+
+    var app = new Vue({
+        el:"#app",
+        data:{
+            carNews:"",
+            carNumber:"",
+
+        },
+        methods:{
+            /*加载页面信息*/
+            start:function () {
+                $.ajax({
+                    type:"post",
+                    url:"../user/getUser",
+                    success: function(data){
+                        if (data==""){
+                            alert("未获取登录信息，请登录...")
+                            window.open(url="../html/login.html","_self")
+                        }else {
+                            $("#addname").append("当前用户:"+data.userName+"")
+                            app.show()
+
+                        }
+                    }
+                });
+            },
+            /*信息公告查询*/
+           show: function() {
+        var str = " "
+        $.ajax({
+            type: "post",
+            url: "../news/selAll",
+            contentType: 'application/json;charset=UTF-8',
+            dataType: "json",
+            success: function (data) {
+                $("#tab3").empty()
+                for (var i=0;i<data.length;i++){
+                    str="<tr>" +
+                        "<td>"+data[i].newsTitle+"</td>"+
+                        "<td>" +data[i].newsContents+"</td>" +
+                        "<td>" +data[i].newsName+"</td>"+
+                        "<td>" +data[i].newsTime+"</td>"+
+                        "</tr>";
+                    $("#tab3").append(str);
+                }
+            }
+        })
+    }
+
+        }
+    })
+</script>
+</html>

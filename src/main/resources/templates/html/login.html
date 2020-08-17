@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="ZH-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新安社区管理系统</title>
+    <link rel="stylesheet" href="../css/layui.css">
+    <link rel="stylesheet" href="../css/login1.css">
+</head>
+
+<body>
+<div id="container" class="kit-login">
+    <div class="kit-login-bg"></div>
+    <div class="kit-login-wapper">
+        <h1 class="kit-login-slogan">欢迎使用 <br>新安社区管理系统</h1>
+        <div class="kit-login-form" v-show="isLogin">
+            <h4 class="kit-login-title">用户登录</h4>
+            <form class="layui-form">
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+
+                        <span class="kit-login-input">
+                <input type="text" maxlength="12"  placeholder=" 请输入手机号" v-model="name"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="password" maxlength="12"  placeholder=" 请输入密码" v-model="password"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <button class="layui-btn kit-login-btn" type="button"  @click="login">登  录</button>
+                </div>
+                <div class="kit-login-row" style="margin-bottom:0;">
+                    <a href="#" style="color: rgb(153, 153, 153); text-decoration: none; font-size: 13px;" @click="zhuce">没有账号去注册</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="kit-login-form" v-show="isRegister">
+            <h4 class="kit-login-title">用户注册</h4>
+            <form class="layui-form">
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="text" maxlength="12" placeholder="请输入姓名" v-model="name1"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="text" maxlength="11" placeholder="请输入手机号" v-model="phone"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="text" maxlength="18" placeholder="××栋+房号" v-model="address"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="text" maxlength="18" placeholder="房屋面积" v-model="house"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="text" maxlength="11" placeholder="户型：几室几厅几卫" v-model="userStyle"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="text" maxlength="11" placeholder="房产证号" v-model="userNumber"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+
+
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <span class="kit-login-input">
+                <input type="password" maxlength="12" placeholder="请输入密码" v-model="password1"/>
+              </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <button class="layui-btn kit-login-btn" lay-submit type="button" @click="register">注册</button>
+                </div>
+                <div class="kit-login-row" style="margin-bottom:0;">
+                    <a href="#" style="color: rgb(153, 153, 153); text-decoration: none; font-size: 13px;" @click="denglu">已有账号去登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="../js/jquery.min.js"></script>
+<script src="../js/vue.js"></script>
+<script>
+
+    var vm = new Vue({
+        el:"#container",
+        data:{
+            name: "",
+            password: "",
+
+            name1:"",
+            address:"",
+            phone:"",
+            house : "",
+            password1:"",
+            userStyle:"",
+            userNumber:"",
+            isLogin:true,
+            isRegister:false
+
+        },
+
+        methods:{
+            /*显示注册页面*/
+            zhuce:function() {
+                this.isLogin=false
+                this.isRegister=true
+            },
+            /*显示登录页面*/
+            denglu:function() {
+                this.isLogin=true
+                this.isRegister=false
+            },
+            /*登陆*/
+            login:function() {
+                var  name=this.name
+                var  password =this.password
+                var info={"userPhone":name,"userPassword":password}
+
+                $.ajax({
+                    url:"../user/login",
+                    type:"post",
+                    data:JSON.stringify(info),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType:"json",
+                    success:function (data) {
+                        if (data.msg=="登录成功") {
+                            location.href="index.html"
+                        }else {
+                            alert(data.msg)
+                        }
+                    }
+                })
+            },
+            /*注册*/
+            register:function(){
+                var info ={"userName":this.name1,"userPassword":this.password1,"userPhone":this.phone,"userAddress":this.address,
+                    "userHouse":this.house,"userStyle":this.userStyle,"userNumber":this.userNumber}
+                $.ajax({
+                    url:"../user/register",
+                    type:"post",
+                    data:JSON.stringify(info),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType:"json",
+                    success:function (data) {
+                        if (data.msg=="注册成功") {
+                            alert("注册成功，请登录")
+                            vm.denglu()
+                            vm.name=vm.phone
+                            vm.password=vm.password1
+                        }else {
+                            alert(data.msg)
+                        }
+                    }
+                })
+
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
